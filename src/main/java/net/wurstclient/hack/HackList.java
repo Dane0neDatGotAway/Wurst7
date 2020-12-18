@@ -158,6 +158,10 @@ public final class HackList implements UpdateListener
 	public final TrueSightHack trueSightHack = new TrueSightHack();
 	public final TunnellerHack tunnellerHack = new TunnellerHack();
 	public final XRayHack xRayHack = new XRayHack();
+	public final ShulkerDupeHack shulkerDupeHack = new ShulkerDupeHack();
+	public final GuiHack guiHack = new GuiHack();
+	public final CompassHack compassHack = new CompassHack();
+	public final EntityControlHack entityControlHack = new EntityControlHack();
 	
 	private final TreeMap<String, Hack> hax =
 		new TreeMap<>((o1, o2) -> o1.compareToIgnoreCase(o2));

@@ -15,14 +15,20 @@ import net.wurstclient.events.IsPlayerInWaterListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.hack.Hack;
 import net.wurstclient.settings.SliderSetting;
+import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 
 @SearchTags({"FlyHack", "fly hack", "flying"})
 public final class FlightHack extends Hack
 	implements UpdateListener, IsPlayerInWaterListener
 {
+	private boolean moveDown = false;
+	private double ySpeed = 0f;
 	public final SliderSetting speed =
 		new SliderSetting("Speed", 1, 0.05, 5, 0.05, ValueDisplay.DECIMAL);
+
+	private final CheckboxSetting vanillaFlight =
+        new CheckboxSetting("Vanilla Flight (prevents kicks)", false);
 	
 	public FlightHack()
 	{
@@ -31,6 +37,7 @@ public final class FlightHack extends Hack
 				+ " You will take fall damage if you don't use NoFall.");
 		setCategory(Category.MOVEMENT);
 		addSetting(speed);
+		addSetting(vanillaFlight);
 	}
 	
 	@Override
@@ -52,6 +59,7 @@ public final class FlightHack extends Hack
 	@Override
 	public void onUpdate()
 	{
+		boolean isMovingDown = false;
 		ClientPlayerEntity player = MC.player;
 		
 		player.getAbilities().flying = false;
@@ -61,10 +69,31 @@ public final class FlightHack extends Hack
 		Vec3d velcity = player.getVelocity();
 		
 		if(MC.options.keyJump.isPressed())
+		{
 			player.setVelocity(velcity.add(0, speed.getValue(), 0));
+			ySpeed = speed.getValue();
+		}
 		
 		if(MC.options.keySneak.isPressed())
+		{
 			player.setVelocity(velcity.subtract(0, speed.getValue(), 0));
+			ySpeed = -speed.getValue();
+			isMovingDown = true;
+		}
+		if(vanillaFlight.isChecked() && !isMovingDown)
+		{
+			if(moveDown)
+			{
+				moveDown=false;
+				player.setVelocity(velcity.add(0, velcity.y+ySpeed+0.05, 0));
+			}
+			else
+			{
+				moveDown=true;
+				player.setVelocity(velcity.add(0, velcity.y+ySpeed-0.05, 0));
+			}
+		}
+		ySpeed = 0;
 	}
 	
 	@Override
